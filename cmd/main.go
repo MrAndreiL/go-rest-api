@@ -5,9 +5,9 @@ import (
 )
 
 func main() {
-    // Open database connection.
-    db := database.Connect()
+	// Open database connection.
+	db := database.Connect()
 
-    // Close database connection.
-    database.CloseConnection(db)
+	// Close database connection.
+	database.CloseConnection(db)
 }
