@@ -19,7 +19,7 @@ func Connect() {
 		panic(err.Error())
 	}
 	isCreated = true
-	fmt.Println("Connection established successfully.")
+	fmt.Println("Connection to database established successfully.")
 
 	// Create tables if not created and seed them with default values.
 	err = seedDatabase()
@@ -105,5 +105,5 @@ func CloseConnection() {
 		fmt.Println("Error occurred when closing database connection")
 		panic(err.Error())
 	}
-	fmt.Println("Connection closed successfully.")
+	fmt.Println("Connection to database closed successfully.")
 }
