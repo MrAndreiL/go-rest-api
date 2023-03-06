@@ -7,14 +7,23 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func Connect() *sql.DB {
-	// Establish connection.
-	db, err := sql.Open("mysql", "user:user_password@tcp(127.0.0.1:6033)/app_db")
+var isCreated bool
+var db *sql.DB
 
+func Connect() *sql.DB {
+    // make sure a single instance is created
+    if isCreated {
+        return db
+    }
+
+	// Establish connection.
+    var err error
+	db, err = sql.Open("mysql", "user:user_password@tcp(127.0.0.1:6033)/app_db")
 	if err != nil {
 		fmt.Println("Error occured when connecting to database.")
 		panic(err.Error())
 	}
+    isCreated = true
 	fmt.Println("Connection established successfully.")
 
 	// Create tables if not created and seed them with default values.
