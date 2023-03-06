@@ -6,8 +6,8 @@ import (
 
 func main() {
 	// Open database connection.
-	db := database.Connect()
+	database.Connect()
 
 	// Close database connection after function ends.
-	defer database.CloseConnection(db)
+	defer database.CloseConnection()
 }

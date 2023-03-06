@@ -10,12 +10,7 @@ import (
 var isCreated bool
 var db *sql.DB
 
-func Connect() *sql.DB {
-	// make sure a single instance is created
-	if isCreated {
-		return db
-	}
-
+func Connect() {
 	// Establish connection.
 	var err error
 	db, err = sql.Open("mysql", "user:user_password@tcp(127.0.0.1:6033)/app_db")
@@ -27,16 +22,21 @@ func Connect() *sql.DB {
 	fmt.Println("Connection established successfully.")
 
 	// Create tables if not created and seed them with default values.
-	err = seedDatabase(db)
+	err = seedDatabase()
 	if err != nil {
 		fmt.Println("Error occurred when seeding database with default values.")
 		panic(err.Error())
 	}
+}
 
+func GetDbConnection() *sql.DB {
+	if !isCreated {
+		Connect()
+	}
 	return db
 }
 
-func seedDatabase(db *sql.DB) error {
+func seedDatabase() error {
 	studentsCreate := `CREATE TABLE IF NOT EXISTS students (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
                                                                  name TEXT NOT NULL,  
                                                                  age INT NOT NULL,  
@@ -98,7 +98,7 @@ func seedDatabase(db *sql.DB) error {
 	return nil
 }
 
-func CloseConnection(db *sql.DB) {
+func CloseConnection() {
 	err := db.Close()
 
 	if err != nil {
