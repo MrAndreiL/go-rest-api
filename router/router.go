@@ -23,6 +23,14 @@ func handleStudent(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleStudents(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "PUT":
+		controllers.PutStudentCollection(w)
+	case "DELETE":
+		controllers.DeleteStudentCollection(w)
+	default:
+		utils.SendBadRequestGeneric(w, "Invalid request.")
+	}
 }
 
 func handleDoctor(w http.ResponseWriter, r *http.Request) {

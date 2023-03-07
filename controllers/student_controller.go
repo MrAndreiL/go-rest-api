@@ -64,3 +64,19 @@ func DeleteStudentEntity(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(code)
 	w.Write(response)
 }
+
+func PutStudentCollection(w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "application/json")
+
+	w.WriteHeader(http.StatusMethodNotAllowed)
+
+	w.Write(models.JsonErrorResponseMessage("Cannot replace entire collection."))
+}
+
+func DeleteStudentCollection(w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "application/json")
+
+	w.WriteHeader(http.StatusMethodNotAllowed)
+
+	w.Write(models.JsonErrorResponseMessage("Cannot delete entire collection."))
+}
