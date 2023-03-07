@@ -49,3 +49,18 @@ func PutStudentEntityRequest(w http.ResponseWriter, r *http.Request) {
 		w.Write(response)
 	}
 }
+
+func DeleteStudentEntity(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	id, err := strconv.Atoi(strings.TrimPrefix(r.URL.Path, "/api/students/"))
+	if err != nil { // invalid URI
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(models.JsonErrorResponseMessage("Invalid resource identifier."))
+		return
+	}
+
+	response, code := models.DeleteStudent(id)
+	w.WriteHeader(code)
+	w.Write(response)
+}

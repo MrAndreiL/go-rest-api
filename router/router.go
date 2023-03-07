@@ -15,6 +15,8 @@ func handleStudent(w http.ResponseWriter, r *http.Request) {
 		utils.SendBadRequestGeneric(w, "Cannot create resource at given location")
 	case "PUT":
 		controllers.PutStudentEntityRequest(w, r)
+	case "DELETE":
+		controllers.DeleteStudentEntity(w, r)
 	default:
 		utils.SendBadRequestGeneric(w, "Invalid request.")
 	}

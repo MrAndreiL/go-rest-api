@@ -44,12 +44,7 @@ func PutStudent(id int, body io.ReadCloser) ([]byte, int) {
 
 	db := database.GetDbConnection()
 
-	// first, make sure the item exists
-	var stud Student
-
-	query := "SELECT * FROM students WHERE id = ?"
-	err = db.QueryRow(query, id).Scan(&stud.Id, &stud.Name, &stud.Age, &stud.Email, &stud.Gpa)
-	if err == sql.ErrNoRows { // given id does not exist
+	if !isItemValid(id, db) {
 		return JsonErrorResponseMessage("The item does not exist"), 404
 	}
 
@@ -83,4 +78,33 @@ func PutStudent(id int, body io.ReadCloser) ([]byte, int) {
 	}
 
 	return nil, 204
+}
+
+func DeleteStudent(id int) ([]byte, int) {
+	db := database.GetDbConnection()
+
+	if !isItemValid(id, db) {
+		return JsonErrorResponseMessage("The item does not exist"), 404
+	}
+
+	cmd := "DELETE FROM students WHERE id = ?"
+
+	_, err := db.Exec(cmd, id)
+	if err != nil {
+		return JsonErrorResponseMessage("Server error occurred when processing request"), 500
+	}
+
+	return JsonErrorResponseMessage("Item was deleted successfully"), 200
+}
+
+func isItemValid(id int, db *sql.DB) bool {
+	res := db.QueryRow("SELECT * FROM students WHERE id = ?", id)
+
+	var student Student
+	err := res.Scan(&student.Id, &student.Name, &student.Age, &student.Email, &student.Gpa)
+
+	if err == sql.ErrNoRows {
+		return false
+	}
+	return true
 }
