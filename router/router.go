@@ -24,6 +24,8 @@ func handleStudent(w http.ResponseWriter, r *http.Request) {
 
 func handleStudents(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
+	case "GET":
+		controllers.GetStudentCollection(w, r)
 	case "POST":
 		controllers.PostStudentCollection(w, r)
 	case "PUT":

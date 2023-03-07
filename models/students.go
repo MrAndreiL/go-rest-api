@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"fmt"
 	"io"
 
 	"github.com/MrAndreiL/go-rest-api/database"
@@ -136,6 +137,29 @@ func PostStudentCollection(body io.ReadCloser) ([]byte, int, int) {
 	}
 
 	return JsonErrorResponseMessage("The item was created successfully."), 201, id
+}
+
+func GetRequestCollection() ([]byte, int) {
+	db := database.GetDbConnection()
+
+	query := "SELECT id, name, age, email, gpa FROM students WHERE id != 0"
+	res, err := db.Query(query)
+	if err != nil {
+		return JsonErrorResponseMessage("Server error occurred when processing request"), 500
+	}
+
+	response := make([]Student, 0)
+	for res.Next() {
+		var student Student
+
+		err = res.Scan(&student.Id, &student.Name, &student.Age, &student.Email, &student.Gpa)
+		if err != nil {
+			fmt.Println(err)
+			return JsonErrorResponseMessage("Server error occurred when processing request"), 500
+		}
+		response = append(response, student)
+	}
+	return JsonListStudentEncoding(response), 200
 }
 
 func isItemValid(id int, db *sql.DB) bool {

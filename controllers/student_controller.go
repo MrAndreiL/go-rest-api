@@ -91,3 +91,14 @@ func PostStudentCollection(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(code)
 	w.Write(response)
 }
+
+func GetStudentCollection(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	// no limit or offset, get the entire collection.
+	if r.URL.String() == "/api/students" {
+		response, code := models.GetRequestCollection()
+		w.WriteHeader(code)
+		w.Write(response)
+	}
+}

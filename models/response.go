@@ -40,3 +40,13 @@ func JsonStudentEncoding(student *Student) []byte {
 
 	return jsonMessage
 }
+
+func JsonListStudentEncoding(students []Student) []byte {
+	jsonMessage, err := json.Marshal(students)
+
+	if err != nil {
+		log.Fatal("Error occured when marshalling json.")
+	}
+
+	return jsonMessage
+}
