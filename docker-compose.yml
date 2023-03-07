@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  db:
+    image: mysql
+    container_name: db_mysql
+    environment:
+      MY_SQL_HOST: db_mysql
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: app_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user_password
+    ports:
+      - "6033:3306"
+    volumes:
+      - /usr/certs:/certs
