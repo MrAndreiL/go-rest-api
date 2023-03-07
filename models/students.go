@@ -19,7 +19,7 @@ type Student struct {
 func GetStudent(id int) ([]byte, int) {
 	db := database.GetDbConnection()
 
-	res := db.QueryRow("SELECT * FROM students WHERE id = ?", id)
+	res := db.QueryRow("SELECT id, name, age, email, gpa FROM students WHERE id = ?", id)
 
 	var student Student
 	err := res.Scan(&student.Id, &student.Name, &student.Age, &student.Email, &student.Gpa)
@@ -60,9 +60,9 @@ func PutStudent(id int, body io.ReadCloser) ([]byte, int) {
 	}
 
 	// update database
-	cmd := "UPDATE students SET name = ?, age = ?, email = ?, gpa = ? WHERE id = ?"
+	cmd := "UPDATE students SET name = ?, age = ?, email = ?, gpa = ?, tag = ? WHERE id = ?"
 
-	res, err := db.Exec(cmd, student.Name, student.Age, student.Email, student.Gpa, id)
+	res, err := db.Exec(cmd, student.Name, student.Age, student.Email, student.Gpa, utils.GenerateEntityTag(), id)
 	if err != nil {
 		return JsonErrorResponseMessage("Server error occurred when processing request"), 500
 	}
@@ -95,6 +95,47 @@ func DeleteStudent(id int) ([]byte, int) {
 	}
 
 	return JsonErrorResponseMessage("Item was deleted successfully"), 200
+}
+
+func PostStudentCollection(body io.ReadCloser) ([]byte, int, int) {
+	student, err := JsonStudentDecoding(body)
+
+	if err != nil { // bad serialization due to redundant or erroneous fields
+		return JsonErrorResponseMessage("Cannot update specified resource."), 500, 0
+	}
+
+	db := database.GetDbConnection()
+
+	// now, validate given data
+	if !utils.IsEmailValid(student.Email) {
+		return JsonErrorResponseMessage("Invalid email."), 400, 0
+	}
+	if !utils.IsAgeValid(student.Age) {
+		return JsonErrorResponseMessage("Invalid age"), 400, 0
+	}
+	if !utils.IsGpaValid(student.Gpa) {
+		return JsonErrorResponseMessage("Invalid GPA"), 400, 0
+	}
+
+	cmd := "INSERT INTO students (name, age, email, gpa, tag) VALUES (?, ?, ?, ?, ?)"
+
+	tag := utils.GenerateEntityTag()
+
+	_, err = db.Exec(cmd, student.Name, student.Age, student.Email, student.Gpa, tag)
+	if err != nil {
+		return JsonErrorResponseMessage("Server error occurred when processing request."), 500, 0
+	}
+
+	// provide id for location header.
+	var id int
+
+	query := "SELECT id FROM students WHERE tag = ?"
+	err = db.QueryRow(query, tag).Scan(&id)
+	if err != nil {
+		return JsonErrorResponseMessage("Server error occurred when processing request."), 500, 0
+	}
+
+	return JsonErrorResponseMessage("The item was created successfully."), 201, id
 }
 
 func isItemValid(id int, db *sql.DB) bool {

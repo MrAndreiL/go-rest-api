@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/MrAndreiL/go-rest-api/utils"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -41,7 +42,8 @@ func seedDatabase() error {
                                                                  name TEXT NOT NULL,  
                                                                  age INT NOT NULL,  
                                                                  email VARCHAR(50) NOT NULL, 
-                                                                 gpa FLOAT NOT NULL)`
+                                                                 gpa FLOAT NOT NULL,
+                                                                 tag VARCHAR(50) NOT NULL)`
 
 	_, err := db.Exec(studentsCreate)
 	if err != nil {
@@ -57,9 +59,9 @@ func seedDatabase() error {
 	}
 
 	if res.Next() == false {
-		studentsInsert := `INSERT INTO students (name, age, email, gpa) VALUES (?, ?, ?, ?)`
+		studentsInsert := `INSERT INTO students (name, age, email, gpa, tag) VALUES (?, ?, ?, ?, ?)`
 
-		_, err := db.Exec(studentsInsert, "Lungu Andrei", 21, "lunguandrei759@gmail.com", 2.7)
+		_, err := db.Exec(studentsInsert, "Lungu Andrei", 21, "lunguandrei759@gmail.com", 2.7, utils.GenerateEntityTag())
 		if err != nil {
 			fmt.Println("Student seed inserting error")
 			return err
@@ -70,7 +72,8 @@ func seedDatabase() error {
 	doctorsCreate := `CREATE TABLE IF NOT EXISTS doctors (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                                                                name TEXT NOT NULL,
                                                                age INT NOT NULL,
-                                                               specialty TEXT NOT NULL)`
+                                                               specialty TEXT NOT NULL,
+                                                               tag VARCHAR(50) NOT NULL)`
 
 	_, err = db.Exec(doctorsCreate)
 	if err != nil {
@@ -86,9 +89,9 @@ func seedDatabase() error {
 	}
 
 	if res.Next() == false {
-		doctorsInsert := `INSERT INTO doctors (name, age, specialty) VALUES (?, ?, ?)`
+		doctorsInsert := `INSERT INTO doctors (name, age, specialty, tag) VALUES (?, ?, ?, ?)`
 
-		_, err := db.Exec(doctorsInsert, "Tiron Teodor", 19, "neurosurgeon")
+		_, err := db.Exec(doctorsInsert, "Tiron Teodor", 19, "neurosurgeon", utils.GenerateEntityTag())
 		if err != nil {
 			fmt.Println("Doctor seed inserting error")
 			return err

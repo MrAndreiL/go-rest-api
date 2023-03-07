@@ -80,3 +80,14 @@ func DeleteStudentCollection(w http.ResponseWriter) {
 
 	w.Write(models.JsonErrorResponseMessage("Cannot delete entire collection."))
 }
+
+func PostStudentCollection(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	response, code, id := models.PostStudentCollection(r.Body)
+	if code == http.StatusCreated {
+		w.Header().Set("Location", r.URL.String()+"/"+strconv.Itoa(id))
+	}
+	w.WriteHeader(code)
+	w.Write(response)
+}
