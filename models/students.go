@@ -5,6 +5,7 @@ import (
 	"io"
 
 	"github.com/MrAndreiL/go-rest-api/database"
+	"github.com/MrAndreiL/go-rest-api/utils"
 )
 
 type Student struct {
@@ -52,6 +53,17 @@ func PutStudent(id int, body io.ReadCloser) ([]byte, int) {
 		return JsonErrorResponseMessage("The item does not exist"), 404
 	}
 
+	// now, validate given data
+	if !utils.IsEmailValid(student.Email) {
+		return JsonErrorResponseMessage("Invalid email."), 400
+	}
+	if !utils.IsAgeValid(student.Age) {
+		return JsonErrorResponseMessage("Invalid age"), 400
+	}
+	if !utils.IsGpaValid(student.Gpa) {
+		return JsonErrorResponseMessage("Invalid GPA"), 400
+	}
+
 	// update database
 	cmd := "UPDATE students SET name = ?, age = ?, email = ?, gpa = ? WHERE id = ?"
 
@@ -70,5 +82,5 @@ func PutStudent(id int, body io.ReadCloser) ([]byte, int) {
 		return JsonErrorResponseMessage("The item already exists in the given form"), 409
 	}
 
-	return JsonErrorResponseMessage("The item was updated succsessfully"), 204
+	return nil, 204
 }
