@@ -24,11 +24,28 @@ func GetStudentEntityRequest(w http.ResponseWriter, r *http.Request) {
 	if code == http.StatusOK { // provide caching support
 		key := fmt.Sprint(id) + "s"
 
-		if utils.CacheSupport(string(key), w, r) {
+		if utils.CacheSupport(key, w, r) {
 			w.WriteHeader(http.StatusNotModified)
 			return
 		}
 	}
 	w.WriteHeader(code)
 	w.Write(response)
+}
+
+func PutStudentEntityRequest(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	id, err := strconv.Atoi(strings.TrimPrefix(r.URL.Path, "/api/students/"))
+	if err != nil { // invalid URI
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(models.JsonErrorResponseMessage("Invalid resource identifier."))
+		return
+	}
+
+	response, code := models.PutStudent(id, r.Body)
+	w.WriteHeader(code)
+	if code != http.StatusNoContent {
+		w.Write(response)
+	}
 }

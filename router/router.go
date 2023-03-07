@@ -4,11 +4,19 @@ import (
 	"net/http"
 
 	"github.com/MrAndreiL/go-rest-api/controllers"
+	"github.com/MrAndreiL/go-rest-api/utils"
 )
 
 func handleStudent(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
+	switch r.Method {
+	case "GET":
 		controllers.GetStudentEntityRequest(w, r)
+	case "POST":
+		utils.SendBadRequestGeneric(w, "Cannot create resource at given location")
+	case "PUT":
+		controllers.PutStudentEntityRequest(w, r)
+	default:
+		utils.SendBadRequestGeneric(w, "Invalid request.")
 	}
 }
 
